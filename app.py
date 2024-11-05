@@ -3,8 +3,12 @@ from rabbitmq_send import send_query_to_rabbitmq
 import pika
 import json
 import threading
+import redis  # Import Redis library
 
 app = Flask(__name__)
+
+# Initialize Redis client
+redis_client = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
 
 # Shared variable to store the latest response
 latest_response = None
@@ -37,7 +41,12 @@ def submit_query():
     data = request.get_json()
     query = data['query']
 
-    
+    # Check Redis cache for the query response
+    cached_response = redis_client.get(query)
+    if cached_response:
+        return jsonify({"response": cached_response})
+
+    # If not cached, send the query to RabbitMQ
     send_query_to_rabbitmq(query)
 
     while latest_response is None:
@@ -45,6 +54,10 @@ def submit_query():
 
     response = latest_response
     latest_response = None  
+
+    # Cache the response in Redis with a timeout (e.g., 60 seconds)
+    redis_client.setex(query, 60, response)
+    
     return jsonify({"response": response})
 
 if __name__ == "__main__":
