@@ -5,7 +5,7 @@ from langchain.document_loaders.pdf import PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema.document import Document
 from get_embedding_function import get_embedding_function
-from langchain.vectorstores.chroma import Chroma
+from langchain_chroma import Chroma
 
 
 CHROMA_PATH = "chroma"
@@ -30,7 +30,10 @@ def main():
 
 def load_documents():
     document_loader = PyPDFDirectoryLoader(DATA_PATH)
-    return document_loader.load()
+    documents = document_loader.load()
+    # print(f"Loaded {len(documents)} documents.")
+    return documents
+
 
 
 def split_documents(documents: list[Document]):
@@ -40,7 +43,9 @@ def split_documents(documents: list[Document]):
         length_function=len,
         is_separator_regex=False,
     )
-    return text_splitter.split_documents(documents)
+    chunks = text_splitter.split_documents(documents)
+    # print(f"Split into {len(chunks)} chunks.")
+    return chunks
 
 
 def add_to_chroma(chunks: list[Document]):
