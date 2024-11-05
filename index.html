@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Flow</title>
+</head>
+<body>
+    <h1>Enter Query</h1>
+    <form id="query-form">
+        <input type="text" id="query" name="query" placeholder="Enter your query" required>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="response">
+        <h2>Response:</h2>
+        <p id="response-text"></p>
+    </div>
+    <script>
+        document.getElementById("query-form").onsubmit = async function (event) {
+            event.preventDefault();
+            const query = document.getElementById("query").value;
+            const responseElem = document.getElementById("response-text");
+            responseElem.innerText = "Processing...";
+
+            const response = await fetch('/submit_query', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query })
+            });
+
+            const result = await response.json();
+            responseElem.innerText = result.response;
+        };
+    </script>
+</body>
+</html>
