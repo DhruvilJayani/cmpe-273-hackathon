@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Flow Chatbot</title>
+    <title>UNICEF Bot</title>
     <style>
         /* Dark mode colors */
         body {
@@ -37,8 +37,7 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             margin-bottom: 20px;
             display: flex;
-            flex-direction: column-reverse;
-            position: relative;
+            flex-direction: column;
         }
 
         .message {
@@ -122,7 +121,7 @@
     </style>
 </head>
 <body>
-    <h1>Chatbot Interface</h1>
+    <h1>UNICEF Bot</h1>
     <div class="chat-container" id="chat-container">
         <div id="responses"></div>
     </div>
@@ -143,14 +142,17 @@
             const userMessageDiv = document.createElement("div");
             userMessageDiv.classList.add("message", "user-message");
             userMessageDiv.innerText = query;
-            responsesDiv.prepend(userMessageDiv);
+            responsesDiv.appendChild(userMessageDiv);
             
             // Show processing message
             const processingDiv = document.createElement("div");
             processingDiv.classList.add("message", "bot-response");
             processingDiv.innerText = "Processing...";
-            responsesDiv.prepend(processingDiv);
+            responsesDiv.appendChild(processingDiv);
             document.getElementById("query").value = '';
+
+            // Scroll to the bottom of the chat container
+            responsesDiv.scrollTop = responsesDiv.scrollHeight;
 
             // Fetch response from server
             const response = await fetch('/submit_query', {
@@ -164,7 +166,7 @@
             // Update the processing message with the actual response
             processingDiv.innerText = result.response;
 
-            // Scroll to the bottom of the chat container
+            // Scroll to the bottom after updating the response
             responsesDiv.scrollTop = responsesDiv.scrollHeight;
         };
     </script>
